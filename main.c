@@ -38,7 +38,13 @@ char *mode2str(int mode)
 
 int main(int argc, char *argv[])
 {
-    DIR *dir = opendir("./");
+    char *path;
+    if (argc > 1) {
+        path = argv[1];
+    }
+    else path = "./";
+
+    DIR *dir = opendir(path);
     if (!dir) {
         perror("Can not open dir");
         return 1;
@@ -64,12 +70,11 @@ int main(int argc, char *argv[])
     struct stat stats;
     struct tm dt;
 
-    printf("filenum = %d\n", fnum);
     for (int i = 0; i < fnum; i++) {
         if (fnames[i][0] == '.')
             continue;
         char name[258];
-        sprintf(name, "./%s", fnames[i]);
+        sprintf(name, "%s%s", path, fnames[i]);
         if (!stat(name, &stats)) {
             char *mode_str = mode2str(stats.st_mode);
             struct passwd *pw = getpwuid(stats.st_uid);
