@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <pwd.h>
 #include <grp.h>
+#include <time.h>
 
 void sort_names(char **str, int num)
 {
@@ -61,6 +62,7 @@ int main(int argc, char *argv[])
     sort_names(fnames, fnum);
 
     struct stat stats;
+    struct tm dt;
 
     printf("filenum = %d\n", fnum);
     for (int i = 0; i < fnum; i++) {
@@ -70,9 +72,12 @@ int main(int argc, char *argv[])
             char *mode_str = mode2str(stats.st_mode);
             struct passwd *pw = getpwuid(stats.st_uid);
             struct group *gr = getgrgid(stats.st_gid);
-            printf("%s %d %s %s %s\n",
+            dt = *(localtime(&stats.st_ctime));
+            char ftime[30];
+            strftime(ftime, 30, "%b %d %H:%M %Y", &dt);
+            printf("%s %d %s %s %d\t%s %s\n",
                     mode_str, stats.st_nlink, pw->pw_name, gr->gr_name,
-                    fnames[i]);
+                    stats.st_size, ftime, fnames[i]);
             free(mode_str);
         }
     }
