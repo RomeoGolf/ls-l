@@ -3,6 +3,8 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/stat.h>
+#include <pwd.h>
+#include <grp.h>
 
 void sort_names(char **str, int num)
 {
@@ -66,8 +68,11 @@ int main(int argc, char *argv[])
         sprintf(name, "./%s", fnames[i]);
         if (!stat(name, &stats)) {
             char *mode_str = mode2str(stats.st_mode);
-            printf("%s | links %d | %s\n",
-                    mode_str, stats.st_nlink, fnames[i]);
+            struct passwd *pw = getpwuid(stats.st_uid);
+            struct group *gr = getgrgid(stats.st_gid);
+            printf("%s %d %s %s %s\n",
+                    mode_str, stats.st_nlink, pw->pw_name, gr->gr_name,
+                    fnames[i]);
             free(mode_str);
         }
     }
