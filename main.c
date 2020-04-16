@@ -33,6 +33,7 @@ char *mode2str(int mode)
     result[7] = (mode & S_IROTH) ? 'r' : '-';
     result[8] = (mode & S_IWOTH) ? 'w' : '-';
     result[9] = (mode & S_IXOTH) ? 'x' : '-';
+    if (S_ISLNK(mode)) result[0] = 'l';
     return result;
 }
 
@@ -75,7 +76,7 @@ int main(int argc, char *argv[])
             continue;
         char name[258];
         sprintf(name, "%s%s", path, fnames[i]);
-        if (!stat(name, &stats)) {
+        if (!lstat(name, &stats)) {
             char *mode_str = mode2str(stats.st_mode);
             struct passwd *pw = getpwuid(stats.st_uid);
             struct group *gr = getgrgid(stats.st_gid);
