@@ -1,6 +1,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <string.h>
+
+void sort_names(char **str, int num)
+{
+    char *k;
+    for (int i = 1; i < num; i++)
+        for (int j = 0; j < num - i; j++)
+            if (strcmp(str[j], str[j + 1]) > 0) {
+                k = str[j];
+                str[j] = str[j + 1];
+                str[j + 1] = k;
+            }
+}
 
 int main(int argc, char *argv[])
 {
@@ -21,17 +34,16 @@ int main(int argc, char *argv[])
         sprintf(fname, "%s", entry->d_name);
         fnames[fnum] = fname;
         fnum++;
-        /*printf("%d - %s [%d] %d\n",*/
-                /*entry->d_ino, entry->d_name, entry->d_type, entry->d_reclen);*/
     }
     closedir(dir);
 
-    printf("-----\n");
+    /* sort the fnames array lexicografically */
+    sort_names(fnames, fnum);
+
     printf("filenum = %d\n", fnum);
     for (int i = 0; i < fnum; i++) {
         printf("%s\n", fnames[i]);
     }
-
 
     /* free the fnames memory */
     for (int i = 0; i < fnum; i++)
