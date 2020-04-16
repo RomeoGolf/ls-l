@@ -66,6 +66,8 @@ int main(int argc, char *argv[])
 
     printf("filenum = %d\n", fnum);
     for (int i = 0; i < fnum; i++) {
+        if (fnames[i][0] == '.')
+            continue;
         char name[258];
         sprintf(name, "./%s", fnames[i]);
         if (!stat(name, &stats)) {
