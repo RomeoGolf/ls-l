@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
     struct stat stats;
     struct tm dt;
 
+    int total_size = 0;
     for (int i = 0; i < fnum; i++) {
         if (fnames[i][0] == '.')
             continue;
@@ -78,6 +79,13 @@ int main(int argc, char *argv[])
         sprintf(name, "%s%s", path, fnames[i]);
         if (!lstat(name, &stats)) {
             char *mode_str = mode2str(stats.st_mode);
+
+            if (mode_str[0] != 'l') {
+                int size = stats.st_size / 4096;
+                if ((stats.st_size % 4096) != 0) size++;
+                total_size += size;
+            };
+
             struct passwd *pw = getpwuid(stats.st_uid);
             struct group *gr = getgrgid(stats.st_gid);
             dt = *(localtime(&stats.st_ctime));
@@ -89,6 +97,8 @@ int main(int argc, char *argv[])
             free(mode_str);
         }
     }
+    int total_blocks = total_size * 4;
+    printf("total: %d\n", total_blocks);
 
     /* free the fnames memory */
     for (int i = 0; i < fnum; i++)
