@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
+#include <sys/stat.h>
 
 void sort_names(char **str, int num)
 {
@@ -40,9 +41,16 @@ int main(int argc, char *argv[])
     /* sort the fnames array lexicografically */
     sort_names(fnames, fnum);
 
+    struct stat stats;
+
     printf("filenum = %d\n", fnum);
     for (int i = 0; i < fnum; i++) {
-        printf("%s\n", fnames[i]);
+        char name[258];
+        sprintf(name, "./%s", fnames[i]);
+        if (!stat(name, &stats)) {
+            printf("mode %x | links %d | %s\n",
+                    stats.st_mode, stats.st_nlink, fnames[i]);
+        }
     }
 
     /* free the fnames memory */
