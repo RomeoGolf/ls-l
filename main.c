@@ -16,6 +16,23 @@ void sort_names(char **str, int num)
             }
 }
 
+char *mode2str(int mode)
+{
+    char *result = malloc(11 * sizeof(char));
+    result[10] = '\0';
+    result[0] = (S_ISDIR(mode) ? 'd' : '-');
+    result[1] = (mode & S_IRUSR) ? 'r' : '-';
+    result[2] = (mode & S_IWUSR) ? 'w' : '-';
+    result[3] = (mode & S_IXUSR) ? 'x' : '-';
+    result[4] = (mode & S_IRGRP) ? 'r' : '-';
+    result[5] = (mode & S_IWGRP) ? 'w' : '-';
+    result[6] = (mode & S_IXGRP) ? 'x' : '-';
+    result[7] = (mode & S_IROTH) ? 'r' : '-';
+    result[8] = (mode & S_IWOTH) ? 'w' : '-';
+    result[9] = (mode & S_IXOTH) ? 'x' : '-';
+    return result;
+}
+
 int main(int argc, char *argv[])
 {
     DIR *dir = opendir("./");
@@ -48,8 +65,10 @@ int main(int argc, char *argv[])
         char name[258];
         sprintf(name, "./%s", fnames[i]);
         if (!stat(name, &stats)) {
-            printf("mode %x | links %d | %s\n",
-                    stats.st_mode, stats.st_nlink, fnames[i]);
+            char *mode_str = mode2str(stats.st_mode);
+            printf("%s | links %d | %s\n",
+                    mode_str, stats.st_nlink, fnames[i]);
+            free(mode_str);
         }
     }
 
